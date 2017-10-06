@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CollisionTest.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>PhysRit\.cpp</Filter>
     </ClCompile>
@@ -38,6 +35,12 @@
     </ClCompile>
     <ClCompile Include="VectorOperation.cpp">
       <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial_01.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial_02.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
