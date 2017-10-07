@@ -43,7 +43,11 @@ public:
 
 	C2DVector operator-(C2DVector& v);
 	C2DVector operator+(C2DVector& v);
+	C2DVector operator-=(C2DVector& v);
+	C2DVector operator+=(C2DVector& v);
 	C2DVector operator*(float fS);
+	C2DVector operator*(C2DMatrix& m);
+	C2DVector operator/(float fS);
 };
 
 class C2DMatrix

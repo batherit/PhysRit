@@ -142,16 +142,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C2DAssembledColliders.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="test0.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tutorial_03.cpp" />
     <ClCompile Include="Tutorial_01.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PhysRit.cpp" />
-    <ClCompile Include="Tutorial_02.cpp" />
+    <ClCompile Include="Tutorial_02.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="VectorOperation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C2DAssembledColliders.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionDetector.h" />
     <ClInclude Include="PhysRit.h" />

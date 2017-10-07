@@ -22,6 +22,9 @@
     <Filter Include="PhysRit\.h">
       <UniqueIdentifier>{206111d5-0579-42a7-80b3-faccd0c248e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TempTest">
+      <UniqueIdentifier>{170d66af-4b98-4898-9e75-35ca9090cdb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Collider.cpp">
@@ -42,6 +45,15 @@
     <ClCompile Include="Tutorial_02.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="test0.cpp">
+      <Filter>TempTest</Filter>
+    </ClCompile>
+    <ClCompile Include="C2DAssembledColliders.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial_03.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionDetector.h">
@@ -54,6 +66,9 @@
       <Filter>PhysRit\.h</Filter>
     </ClInclude>
     <ClInclude Include="VectorOperation.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
+    <ClInclude Include="C2DAssembledColliders.h">
       <Filter>PhysRit\.h</Filter>
     </ClInclude>
   </ItemGroup>

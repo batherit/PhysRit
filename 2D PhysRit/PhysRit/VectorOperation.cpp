@@ -189,11 +189,47 @@ C2DVector C2DVector::operator+(C2DVector& v)
 	return vResult;
 }
 
+C2DVector C2DVector::operator-=(C2DVector& v)
+{
+	C2DVector vResult;
+
+	vResult.Set(m_fX -= v.m_fX, m_fY -= v.m_fY);
+
+	return vResult;
+}
+
+C2DVector C2DVector::operator+=(C2DVector& v)
+{
+	C2DVector vResult;
+
+	vResult.Set(m_fX += v.m_fX, m_fY += v.m_fY);
+
+	return vResult;
+}
+
 C2DVector C2DVector::operator*(float fS)
 {
 	C2DVector vResult;
 
-	vResult.Set(m_fX * fS, m_fY *fS);
+	vResult.Set(m_fX * fS, m_fY * fS);
+
+	return vResult;
+}
+
+C2DVector C2DVector::operator*(C2DMatrix& m)
+{
+	C2DVector vResult;
+
+	CVectorOperation::C2DTransform(&vResult, this, &m);
+
+	return vResult;
+}
+
+C2DVector  C2DVector::operator/(float fS)
+{
+	C2DVector vResult;
+
+	vResult.Set(m_fX / fS, m_fY / fS);
 
 	return vResult;
 }
