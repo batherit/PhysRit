@@ -40,5 +40,7 @@ public:
 
 	void ZoomInOrOut(float fMultiple);
 	void ZoomInit(void);
+
+	float GetZoomScale(void);
 };
 

@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="PhysRit">
+      <UniqueIdentifier>{137837ab-22d7-48fd-8ba3-7a56c8c8dd5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysRit\.cpp">
+      <UniqueIdentifier>{044228c9-b817-4541-80be-47a6139c4b3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysRit\.h">
+      <UniqueIdentifier>{cbd4dc57-778e-4fe3-a52d-932d42c5dc18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,23 +39,29 @@
     <ClInclude Include="PhysRitAPI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="C2DAssembledColliders.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionDetector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="VectorOperation.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="PhysRit.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="C2DAssembledColliders.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
     <ClInclude Include="C2DCamera.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetector.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorOperation.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysRitSimulator.h">
+      <Filter>PhysRit\.h</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -56,23 +71,29 @@
     <ClCompile Include="PhysRitAPI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="C2DAssembledColliders.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionDetector.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="VectorOperation.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="PhysRit.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="C2DAssembledColliders.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
     <ClCompile Include="C2DCamera.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorOperation.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysRitSimulator.cpp">
+      <Filter>PhysRit\.cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

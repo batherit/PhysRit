@@ -10,6 +10,7 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+CPhysRitSimulator gPhysRitSimulator;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -18,39 +19,58 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: 여기에 코드를 입력합니다.
+	// TODO: 여기에 코드를 입력합니다.
 
-    // 전역 문자열을 초기화합니다.
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_PHYSRITAPI, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+	// 전역 문자열을 초기화합니다.
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_PHYSRITAPI, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hInstance);
 
-    // 응용 프로그램 초기화를 수행합니다.
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+	// 응용 프로그램 초기화를 수행합니다.
+	if (!InitInstance(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_PHYSRITAPI));
+	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_PHYSRITAPI));
 
-    MSG msg;
+	MSG msg;
 
-    // 기본 메시지 루프입니다.
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
+	// 기본 메시지 루프입니다.
+	/*while (GetMessage(&msg, nullptr, 0, 0))
+	{
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}*/
+	while (1)
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			// test if this is a quit
+			if (msg.message == WM_QUIT)
+				break;
+
+			// translate any accelerator keys
+			TranslateMessage(&msg);
+			// send the message to the window proc
+			DispatchMessage(&msg);
+		}
+
+		gPhysRitSimulator.Update();
+		gPhysRitSimulator.Render();
+	}
+
+	gPhysRitSimulator.DestroyObjects();
 
     return (int) msg.wParam;
 }
@@ -106,6 +126,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   gPhysRitSimulator.BuildObjects();
+
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -124,54 +146,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static C2DColliderRect c2dCar(17500.0f / 9.81f, 1.80f * 100.0f, 4.70f * 100.0f);
-	static C2DColliderRect c2dDriver(850.0f / 9.81f, 0.50f * 100.0f, 0.90f * 100.0f);
-	static C2DColliderRect c2dFuel(993.0f / 9.81f, 0.90f * 100.0f, 0.50f * 100.0f);
-
-	static C2DColliderCircle c2dCir0(1.0f, 50.0f); 
-	static C2DColliderCircle c2dCir1(100.0f, 50.0f); 
-	static C2DColliderCircle c2dCir2(1.0f, 50.0f); 
-	static C2DColliderCircle c2dCir3(1.0f, 50.0f); 
-	static C2DColliderCircle c2dCir4(1.0f, 50.0f);
-	static C2DColliderCircle c2dCir5(1.0f, 50.0f); 
-	static C2DColliderCircle c2dCir6(1.0f, 50.0f); 
-	static C2DColliderCircle c2dCir7(1.0f, 50.0f); 
-
-	static C2DAssembledColliders c2dAssCar;
-	static C2DAssembledColliders c2dAssRing;
-
-	static C2DCamera c2dCamera;
-
-	static float fSec = 0.0f;
-	static float fTime = 0.0f;
-	static int mark = 1;
-
     switch (message)
     {
 	case WM_CREATE:
 		SetTimer(hWnd, 1, 1, NULL);
-
-		c2dAssCar.AttachCollider(C2DVector(0.0f, 0.0f), 0.0f, &c2dCar);
-		c2dAssCar.AttachCollider(C2DVector(1.0f * 100.0f, 0.5f * 100.0f), 0.0f, &c2dDriver);
-		c2dAssCar.AttachCollider(C2DVector(-2.5f * 100.0f, 0.0f), 0.0f, &c2dFuel);
-
-		c2dAssCar.SetPosition(C2DVector(0.0f, 0.5f));
-		c2dAssCar.RotateZ(3.14f / 180.0f*34.0f);
-
-		c2dAssRing.AttachCollider(C2DVector(0.0f, 100.0f), 0.0f, &c2dCir0);
-		c2dAssRing.AttachCollider(C2DVector(0.0f, -100.0f), 0.0f, &c2dCir1);
-		c2dAssRing.AttachCollider(C2DVector(100.0f, 0.0f), 0.0f, &c2dCir2);
-		c2dAssRing.AttachCollider(C2DVector(-100.0f, 0.0f), 0.0f, &c2dCir3);
-		c2dAssRing.AttachCollider(C2DVector(100.0f, 100.0f), 0.0f, &c2dCir4);
-		c2dAssRing.AttachCollider(C2DVector(100.0f, -100.0f), 0.0f, &c2dCir5);
-		c2dAssRing.AttachCollider(C2DVector(-100.0f, 100.0f), 0.0f, &c2dCir6);
-		c2dAssRing.AttachCollider(C2DVector(-100.0f, -100.0f), 0.0f, &c2dCir7);
-
-		c2dAssRing.SetPosition(C2DVector(0.5f, 0.5f));
-
-		c2dCamera.GenerateView(C2DVector(0.0f, 0.0f), C2DVector(0.0f, 1.0f));
-		c2dCamera.GenerateProj(FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-		c2dCamera.GenerateScreen(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;
     case WM_COMMAND:
         {
@@ -190,46 +168,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-	case WM_KEYUP:
-		switch (wParam)
-		{
-		case VK_UP:
-			c2dCamera.Move(C2DVector(0.0f, 40.0f));
-			break;
-		case VK_DOWN:
-			c2dCamera.Move(C2DVector(0.0f, -40.0f));
-			break;
-		case VK_LEFT:
-			c2dCamera.Move(C2DVector(-40.0f, 0.0f));
-			break;
-		case VK_RIGHT:
-			c2dCamera.Move(C2DVector(40.0f, 0.0f));
-			break;
-		case VK_CONTROL:
-			c2dCamera.ZoomInOrOut(2.0f);
-			break;
-		case VK_SHIFT:
-			c2dCamera.ZoomInOrOut(1.0f/2.0f);
-			break;
-		}
-		break;
 	case WM_TIMER:
-		//c2dAssCar.RotateZ(3.14f / 180.0f*0.1f);
-		c2dAssRing.RotateZ(3.14f / 180.0f*1.3f);
-		fSec += 0.001f;
-		fTime += -5.1f;
-		if ((int)fSec % 2 == 0) mark *= -1;
-		c2dAssRing.MoveCollider(C2DVector(mark * 0.2f, mark * 0.2f), &c2dCir1);
-		//c2dCamera.GenerateView(C2DVector(0.0f, 0.0f), C2DVector(cosf(3.14f / 180.0f * fTime), sinf(3.14f / 180.0f * fTime)));
 		InvalidateRgn(hWnd, NULL, TRUE);
+		break;
+	case WM_SIZE:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MOUSEMOVE:
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_MOUSEWHEEL:
+		//gGameFramework.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
+		gPhysRitSimulator.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
 		break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다.
-			c2dAssCar.RenderAPI(hdc, &c2dCamera);
-			c2dAssRing.RenderAPI(hdc, &c2dCamera);
+			gPhysRitSimulator.Render(hdc);
             EndPaint(hWnd, &ps);
         }
         break;

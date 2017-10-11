@@ -129,3 +129,8 @@ void C2DCamera::ZoomInit(void)
 {
 	m_mtxScale.Identify();
 }
+
+float C2DCamera::GetZoomScale(void)
+{
+	return m_mtxScale.m_f11;
+}
