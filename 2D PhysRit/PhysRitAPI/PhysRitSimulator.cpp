@@ -30,7 +30,7 @@ void CPhysRitSimulator::BuildObjects()
 	c2dFuel = new C2DColliderRect(993.0f / 9.81f, 0.90f * 100.0f, 0.50f * 100.0f);
 
 	c2dCir0 = new C2DColliderCircle(1.0f, 50.0f);
-	c2dCir1 = new C2DColliderCircle(100.0f, 50.0f);
+	c2dCir1 = new C2DColliderCircle(300.0f, 50.0f);
 	c2dCir2 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir3 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir4 = new C2DColliderCircle(1.0f, 50.0f);
@@ -46,10 +46,10 @@ void CPhysRitSimulator::BuildObjects()
 	c2dAssCar->AttachCollider(C2DVector(-2.5f * 100.0f, 0.0f), 0.0f, c2dFuel);
 
 	c2dAssCar->SetPosition(C2DVector(0.0f, 0.5f));
-	c2dAssCar->RotateZ(3.14f / 180.0f*34.0f);
+	c2dAssCar->RotateCMCoordZ(3.14f / 180.0f*34.0f);
 
 	c2dAssRing->AttachCollider(C2DVector(0.0f, 100.0f), 0.0f, c2dCir0);
-	c2dAssRing->AttachCollider(C2DVector(0.0f, -100.0f), 0.0f, c2dCir1);
+	c2dAssRing->AttachCollider(C2DVector(0.0f, -300.0f), 0.0f, c2dCir1);
 	c2dAssRing->AttachCollider(C2DVector(100.0f, 0.0f), 0.0f, c2dCir2);
 	c2dAssRing->AttachCollider(C2DVector(-100.0f, 0.0f), 0.0f, c2dCir3);
 	c2dAssRing->AttachCollider(C2DVector(100.0f, 100.0f), 0.0f, c2dCir4);
@@ -57,7 +57,7 @@ void CPhysRitSimulator::BuildObjects()
 	c2dAssRing->AttachCollider(C2DVector(-100.0f, 100.0f), 0.0f, c2dCir6);
 	c2dAssRing->AttachCollider(C2DVector(-100.0f, -100.0f), 0.0f, c2dCir7);
 
-	c2dAssRing->SetPosition(C2DVector(0.5f, 0.5f));
+	c2dAssRing->SetPosition(C2DVector(0.f, 0.f));
 
 	m_c2dCamera.GenerateView(C2DVector(0.0f, 0.0f), C2DVector(0.0f, 1.0f));
 	m_c2dCamera.GenerateProj(FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -84,17 +84,33 @@ void CPhysRitSimulator::DestroyObjects()
 }
 
 // 충돌체들의 갱신과 렌더를 처리한다.
-void CPhysRitSimulator::Update()
+void CPhysRitSimulator::Update(HWND hwnd)
 {
 	m_Timer.Tick();
 
 	static float fSec = 0.0f;
 	static int mark = 1;
+	static bool bAttached = true;
 	
-	c2dAssRing->RotateZ(3.14f / 180.0f*0.003f);
+	c2dAssRing->RotateCMCoordZ(3.14f / 180.0f*50.0f * m_Timer.GetTimeElapsed());
+	//c2dAssRing->RotateACCoordZ(3.14f / 180.0f*50.0f * -m_Timer.GetTimeElapsed());
 	fSec += m_Timer.GetTimeElapsed();
-	if ((int)fSec % 2 == 0) mark *= -1;
-	c2dAssRing->MoveCollider(C2DVector(mark * 0.0002f, mark * 0.0002f), c2dCir1);
+	if (fSec > (bAttached? 0.5f : 2.0f))   //mark *= -1;
+	{
+		if (bAttached)
+		{
+			c2dAssRing->DetachCollider(c2dCir1);
+			bAttached = false;
+		}
+		else
+		{
+			c2dAssRing->AttachCollider(C2DVector(0.0f, -300.0f), 0.0f, c2dCir1);
+			bAttached = true;
+		}
+		fSec = 0.0f;
+	}
+	//c2dAssRing->MoveCollider(C2DVector(mark * 0.0002f, mark * 0.0002f), c2dCir1);
+	//InvalidateRgn(hwnd, NULL, TRUE);
 }
 
 void CPhysRitSimulator::Render()

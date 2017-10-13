@@ -32,7 +32,7 @@ void C2DAssembledColliders::CalculateInertiaTensor(void)
 	{
 		m_vCenterOfMass = vSumPrimaryMoment / m_fTotalMass;								// 나누기는 분모 != 0 이라는 사실을 절대 잊지 말 것 'ㅅ'/
 		m_mtxCenterOfMass.m_f31 = -m_vCenterOfMass.GetX();
-		m_mtxCenterOfMass.m_f32 = -m_vCenterOfMass.GetY();
+		m_mtxCenterOfMass.m_f32 = -m_vCenterOfMass.GetY();		// 로컬 좌표계에서 정의되는 질량 중심의 좌표를 일단 행렬에 저장.
 	}
 
 	m_fTotalIzz = 0.0f;
@@ -126,7 +126,7 @@ void C2DAssembledColliders::MoveCollider(C2DVector &v, C2DCollider* pCollider)
 	}
 }
 
-void C2DAssembledColliders::RotateZ(float fRadian)
+void C2DAssembledColliders::RotateACCoordZ(float fRadian)
 {
 	C2DMatrix mtxRotate;
 
@@ -136,14 +136,35 @@ void C2DAssembledColliders::RotateZ(float fRadian)
 	CVectorOperation::C2DTransform(&this->m_mtxWorld, &mtxRotate, &this->m_mtxWorld);
 }
 
+void C2DAssembledColliders::RotateCMCoordZ(float fRadian)
+{
+	C2DMatrix mtxTRT;
+	C2DMatrix mtxRotate;
+	C2DVector vCenterOfMassW;
+
+	CVectorOperation::C2DTransform(&vCenterOfMassW, &m_vCenterOfMass, &m_mtxWorld);
+
+	mtxTRT.m_f31 -= vCenterOfMassW.GetX();
+	mtxTRT.m_f32 -= vCenterOfMassW.GetY();
+	mtxRotate.m_f11 = cos(fRadian); mtxRotate.m_f12 = sin(fRadian); mtxRotate.m_f13 = 0.0f;
+	mtxRotate.m_f21 = -sin(fRadian); mtxRotate.m_f22 = cos(fRadian); mtxRotate.m_f23 = 0.0f;
+	CVectorOperation::C2DTransform(&mtxTRT, &mtxTRT, &mtxRotate);
+	mtxTRT.m_f31 += vCenterOfMassW.GetX();
+	mtxTRT.m_f32 += vCenterOfMassW.GetY();
+
+	CVectorOperation::C2DTransform(&this->m_mtxWorld, &this->m_mtxWorld, &mtxTRT);
+}
+
 void C2DAssembledColliders::RenderAPI(HDC hdc, C2DCamera *pCamera)
 {
 	C2DMatrix mtxWorld;
+	//C2DMatrix mtxCenterOfMassW;
 
-	CVectorOperation::C2DTransform(&mtxWorld, &m_mtxCenterOfMass, &m_mtxWorld);
+	//CVectorOperation::C2DTransform(&mtxCenterOfMassW, &m_mtxCenterOfMass, &m_mtxWorld);
+	//CVectorOperation::C2DTransform(&mtxWorld, &m_mtxWorld, &m_mtxCenterOfMass);
 
 	for (auto &collider : m_fvtColliders)
 	{
-		collider->RenderAPI(hdc, &mtxWorld, pCamera);
+		collider->RenderAPI(hdc, &m_mtxWorld, pCamera);
 	}
 }

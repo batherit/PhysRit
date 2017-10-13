@@ -34,7 +34,7 @@ public:
 	void DestroyObjects();
 
 	// 충돌체들의 갱신과 렌더를 처리한다.
-	void Update();
+	void Update(HWND hwnd);
 	void Render();
 	void Render(HDC hdc);
 

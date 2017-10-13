@@ -39,7 +39,8 @@ public:
 
 	void MoveCollider(C2DVector &v, C2DCollider* pCollider);
 
-	void RotateZ(float fRadian);
+	void RotateACCoordZ(float fRadian);
+	void RotateCMCoordZ(float fRadian);
 
 	void RenderAPI(HDC hdc, C2DCamera *pCamera = nullptr);
 };
