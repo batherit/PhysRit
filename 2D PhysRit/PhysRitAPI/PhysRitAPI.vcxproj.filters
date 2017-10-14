@@ -63,6 +63,9 @@
     <ClInclude Include="PhysRitSimulator.h">
       <Filter>PhysRit\.h</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicalOperation.h">
+      <Filter>PhysRit\.h</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -93,6 +96,9 @@
       <Filter>PhysRit\.cpp</Filter>
     </ClCompile>
     <ClCompile Include="PhysRitSimulator.cpp">
+      <Filter>PhysRit\.cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicalOperation.cpp">
       <Filter>PhysRit\.cpp</Filter>
     </ClCompile>
   </ItemGroup>

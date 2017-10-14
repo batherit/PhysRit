@@ -67,6 +67,11 @@ float CVectorOperation::C2DDotProduct(C2DVector* inV1, C2DVector* inV2)
 	return inV1->m_fX * inV2->m_fX + inV1->m_fY * inV2->m_fY;
 }
 
+//void CVectorOperation::C2DCross(C2DVector *outV, C2DVector *inV1, C2DVector *inV2)
+//{
+//	C2DVector vResult;
+//}
+
 void CVectorOperation::C2DInverse(C2DMatrix *outM, C2DMatrix *inM)
 {
 	C2DMatrix mtxResult;

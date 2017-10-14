@@ -40,11 +40,11 @@ float CCollider::GetMass(void)
 	return m_fMass;
 }
 
-C2DCollider::C2DCollider() : m_fIzz(1.0f)
+C2DCollider::C2DCollider() : m_fIzz(1.0f), m_fAngularA(0.0f), m_fAngularV(0.0f)
 {
 }
 
-C2DCollider::C2DCollider(float fMass) : CCollider(fMass)
+C2DCollider::C2DCollider(float fMass) : CCollider(fMass), m_fIzz(1.0f), m_fAngularA(0.0f), m_fAngularV(0.0f)
 {
 
 }
@@ -64,6 +64,26 @@ void C2DCollider::SetPosition(C2DVector& vector)
 	m_mtxWorld.m_f31 = vector.m_fX;
 	m_mtxWorld.m_f32 = vector.m_fY;
 	m_mtxWorld.m_f33 = 1.0f;
+}
+
+void C2DCollider::SetAngularA(float fAngularA)
+{
+	m_fAngularA = fAngularA;
+}
+
+void C2DCollider::SetAngularV(float fAngularV)
+{
+	m_fAngularV = fAngularV;
+}
+
+void C2DCollider::SetLinearA(C2DVector& vLinearA)
+{
+	m_vLinearA.Set(vLinearA);
+}
+
+void C2DCollider::SetLinearV(C2DVector& vLinearV)
+{
+	m_vLinearV.Set(vLinearV);
 }
 
 void C2DCollider::Move(C2DVector& vector)
@@ -106,6 +126,26 @@ void C2DCollider::RotateZ(float fRadian)
 	mtxRotate.m_f21 = -sin(fRadian); mtxRotate.m_f22 = cos(fRadian); mtxRotate.m_f23 = 0.0f;
 
 	CVectorOperation::C2DTransform(&this->m_mtxWorld, &mtxRotate, &this->m_mtxWorld);
+}
+
+void C2DCollider::Update(float fElapsedTime)
+{
+	float fUpdatedAngularV = 0.0f;
+	float fRad = 0.0f;
+	C2DVector vUpdatedLinearV;
+	C2DVector vMove;
+
+	fUpdatedAngularV = m_fAngularV + m_fAngularA * fElapsedTime;
+	vUpdatedLinearV = m_vLinearV + m_vLinearA * fElapsedTime;
+	
+	fRad = (fUpdatedAngularV + m_fAngularV) / 2.0f * fElapsedTime;
+	vMove = (vUpdatedLinearV + m_vLinearV) / 2.0f * fElapsedTime;
+	
+	RotateZ(fRad);
+	Move(vMove);
+
+	m_vLinearV = vUpdatedLinearV;
+	m_fAngularV = fUpdatedAngularV;
 }
 
 C2DColliderCircle::C2DColliderCircle() : m_fRadius(1.0f)

@@ -30,7 +30,7 @@ void CPhysRitSimulator::BuildObjects()
 	c2dFuel = new C2DColliderRect(993.0f / 9.81f, 0.90f * 100.0f, 0.50f * 100.0f);
 
 	c2dCir0 = new C2DColliderCircle(1.0f, 50.0f);
-	c2dCir1 = new C2DColliderCircle(300.0f, 50.0f);
+	c2dCir1 = new C2DColliderCircle(10.0f, 50.0f);
 	c2dCir2 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir3 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir4 = new C2DColliderCircle(1.0f, 50.0f);
@@ -50,14 +50,16 @@ void CPhysRitSimulator::BuildObjects()
 
 	c2dAssRing->AttachCollider(C2DVector(0.0f, 100.0f), 0.0f, c2dCir0);
 	c2dAssRing->AttachCollider(C2DVector(0.0f, -300.0f), 0.0f, c2dCir1);
-	c2dAssRing->AttachCollider(C2DVector(100.0f, 0.0f), 0.0f, c2dCir2);
+	c2dAssRing->AttachCollider(C2DVector(300.0f, 0.0f), 0.0f, c2dCir2);
 	c2dAssRing->AttachCollider(C2DVector(-100.0f, 0.0f), 0.0f, c2dCir3);
-	c2dAssRing->AttachCollider(C2DVector(100.0f, 100.0f), 0.0f, c2dCir4);
+	/*c2dAssRing->AttachCollider(C2DVector(100.0f, 100.0f), 0.0f, c2dCir4);
 	c2dAssRing->AttachCollider(C2DVector(100.0f, -100.0f), 0.0f, c2dCir5);
 	c2dAssRing->AttachCollider(C2DVector(-100.0f, 100.0f), 0.0f, c2dCir6);
-	c2dAssRing->AttachCollider(C2DVector(-100.0f, -100.0f), 0.0f, c2dCir7);
+	c2dAssRing->AttachCollider(C2DVector(-100.0f, -100.0f), 0.0f, c2dCir7);*/
 
 	c2dAssRing->SetPosition(C2DVector(0.f, 0.f));
+	c2dAssRing->SetAngularV(3.14 / 180.0f * 360.0f);
+	c2dAssRing->SetLinearV(C2DVector(20.0f, 20.0f));
 
 	m_c2dCamera.GenerateView(C2DVector(0.0f, 0.0f), C2DVector(0.0f, 1.0f));
 	m_c2dCamera.GenerateProj(FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -92,25 +94,33 @@ void CPhysRitSimulator::Update(HWND hwnd)
 	static int mark = 1;
 	static bool bAttached = true;
 	
-	c2dAssRing->RotateCMCoordZ(3.14f / 180.0f*50.0f * m_Timer.GetTimeElapsed());
-	//c2dAssRing->RotateACCoordZ(3.14f / 180.0f*50.0f * -m_Timer.GetTimeElapsed());
+	c2dAssRing->Update(m_Timer.GetTimeElapsed());
+	//c2dAssRing->RotateCMCoordZ(3.14f / 180.0f*50.0f * m_Timer.GetTimeElapsed());
+	////c2dAssRing->RotateACCoordZ(3.14f / 180.0f*50.0f * -m_Timer.GetTimeElapsed());
 	fSec += m_Timer.GetTimeElapsed();
-	if (fSec > (bAttached? 0.5f : 2.0f))   //mark *= -1;
+	if (fSec > 8.0f/*(bAttached? 5.0f : 5.0f)*/)   //mark *= -1;
 	{
-		if (bAttached)
-		{
+		//if (bAttached)
+		//{
 			c2dAssRing->DetachCollider(c2dCir1);
 			bAttached = false;
-		}
-		else
-		{
-			c2dAssRing->AttachCollider(C2DVector(0.0f, -300.0f), 0.0f, c2dCir1);
-			bAttached = true;
-		}
-		fSec = 0.0f;
+		//}
+		//else
+		//{
+		//	c2dAssRing->AttachCollider(C2DVector(0.0f, -300.0f), 0.0f, c2dCir1);
+		//	bAttached = true;
+		//}
+		//fSec = 0.0f;
+	}
+
+	if (!bAttached)
+	{
+		c2dCir1->Update(m_Timer.GetTimeElapsed());
 	}
 	//c2dAssRing->MoveCollider(C2DVector(mark * 0.0002f, mark * 0.0002f), c2dCir1);
 	//InvalidateRgn(hwnd, NULL, TRUE);
+
+	
 }
 
 void CPhysRitSimulator::Render()
@@ -122,6 +132,7 @@ void CPhysRitSimulator::Render(HDC hdc)
 {
 	c2dAssCar->RenderAPI(hdc, &m_c2dCamera);
 	c2dAssRing->RenderAPI(hdc, &m_c2dCamera);
+	if (!c2dAssRing->IsIn(c2dCir1)) c2dCir1->RenderAPI(hdc, nullptr, &m_c2dCamera);
 }
 
 //윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 

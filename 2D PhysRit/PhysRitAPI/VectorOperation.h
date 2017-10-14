@@ -17,6 +17,7 @@ public:
 	static void C2DScalarProduct(C2DMatrix *outM, float fS, C2DMatrix* inM);
 
 	static float C2DDotProduct(C2DVector* inV1, C2DVector* inV2);
+	/*static void C2DCross(C2DVector *outV, C2DVector *inV1, C2DVector *inV2);*/
 
 	static void C2DInverse(C2DMatrix *outM, C2DMatrix *inM);
 
