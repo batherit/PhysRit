@@ -42,7 +42,7 @@ void C2DAssembledColliders::CalculateInertiaTensor(void)
 	CVectorOperation::C2DTransform(&vRelative, &vRelative, &m_mtxWorld);
 	vRelative.Set(vRelative.GetX() - m_mtxWorld.m_f31, vRelative.GetY() - m_mtxWorld.m_f32);
 	SetLinearV(C2DVector(-vRelative.GetY() * m_fAngularV + m_vLinearV.GetX(), vRelative.GetX() * m_fAngularV + m_vLinearV.GetY()));
-	SetAngularV(0.0f);
+	//SetAngularV(m_fAngularA);
 
 	m_fTotalIzz = 0.0f;
 	for (auto &collider : m_fvtColliders)
