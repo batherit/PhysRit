@@ -67,11 +67,6 @@ float CVectorOperation::C2DDotProduct(C2DVector* inV1, C2DVector* inV2)
 	return inV1->m_fX * inV2->m_fX + inV1->m_fY * inV2->m_fY;
 }
 
-//void CVectorOperation::C2DCross(C2DVector *outV, C2DVector *inV1, C2DVector *inV2)
-//{
-//	C2DVector vResult;
-//}
-
 void CVectorOperation::C2DInverse(C2DMatrix *outM, C2DMatrix *inM)
 {
 	C2DMatrix mtxResult;
@@ -125,6 +120,61 @@ void CVectorOperation::C2DNormalize(C2DVector *outV, C2DVector *inV)
 		CVectorOperation::C2DScalarProduct(&vResult, 1.0f / vLen, inV);
 	}
 	
+
+	outV->Set(vResult);
+}
+
+void CVectorOperation::C3DCross(C3DVector *outV, C3DVector *inV1, C3DVector *inV2)
+{
+	C3DVector vResult;
+
+	vResult.m_fX = inV1->GetY() * inV2->GetZ() - inV1->GetZ() * inV2->GetY();
+	vResult.m_fY = inV1->GetZ() * inV2->GetX() - inV1->GetX() * inV2->GetZ();
+	vResult.m_fZ = inV1->GetX() * inV2->GetY() - inV1->GetY() * inV2->GetX();
+
+	outV->Set(vResult);
+}
+
+C3DVector CVectorOperation::C3DCross(C3DVector *inV1, C3DVector *inV2)
+{
+	C3DVector vResult;
+
+	CVectorOperation::C3DCross(&vResult, inV1, inV2);
+
+	return vResult;
+}
+
+void CVectorOperation::C3DScalarProduct(C3DVector *outV, float fS, C3DVector* inV)
+{
+	outV->m_fX = fS * inV->m_fX;
+	outV->m_fY = fS * inV->m_fY;
+	outV->m_fZ = fS * inV->m_fZ;
+}
+
+float CVectorOperation::C3DDotProduct(C3DVector* inV1, C3DVector* inV2)
+{
+	return inV1->m_fX * inV2->m_fX + inV1->m_fY * inV2->m_fY + inV1->m_fZ * inV2->m_fZ;
+}
+
+float CVectorOperation::C3DLength(C3DVector *inV)
+{
+	return sqrtf(inV->GetX() * inV->GetX() + inV->GetY() * inV->GetY() + inV->GetZ() * inV->GetZ());
+}
+
+void CVectorOperation::C3DNormalize(C3DVector *outV, C3DVector *inV)
+{
+	C3DVector vResult;
+	float vLen = CVectorOperation::C3DLength(inV);
+
+	if (-0.001f <= vLen && vLen <= 0.001f)
+	{
+		vResult.Set(0.0f, 0.0f, 0.0f);
+	}
+	else
+	{
+		CVectorOperation::C3DScalarProduct(&vResult, 1.0f / vLen, inV);
+	}
+
 
 	outV->Set(vResult);
 }
@@ -193,6 +243,14 @@ C2DVector C2DVector::operator-(C2DVector& v)
 	return vResult;
 }
 
+C2DVector C2DVector::operator-=(C2DVector& v)
+{
+	C2DVector vResult;
+
+	vResult.Set(m_fX -= v.m_fX, m_fY -= v.m_fY);
+
+	return vResult;
+}
 C2DVector C2DVector::operator+(C2DVector& v)
 {
 	C2DVector vResult;
@@ -202,14 +260,6 @@ C2DVector C2DVector::operator+(C2DVector& v)
 	return vResult;
 }
 
-C2DVector C2DVector::operator-=(C2DVector& v)
-{
-	C2DVector vResult;
-
-	vResult.Set(m_fX -= v.m_fX, m_fY -= v.m_fY);
-
-	return vResult;
-}
 
 C2DVector C2DVector::operator+=(C2DVector& v)
 {
@@ -238,7 +288,16 @@ C2DVector C2DVector::operator*(C2DMatrix& m)
 	return vResult;
 }
 
-C2DVector  C2DVector::operator/(float fS)
+C2DVector C2DVector::operator*=(float fS)
+{
+	C2DVector vResult;
+
+	vResult.Set(m_fX *= fS, m_fY *= fS);
+
+	return vResult;
+}
+
+C2DVector C2DVector::operator/(float fS)
 {
 	C2DVector vResult;
 
@@ -272,4 +331,140 @@ void C2DMatrix::Set(C2DMatrix &matrix)
 	m_f11 = matrix.m_f11;	m_f12 = matrix.m_f12;	m_f13 = matrix.m_f13;
 	m_f21 = matrix.m_f21;	m_f22 = matrix.m_f22;	m_f23 = matrix.m_f23; 
 	m_f31 = matrix.m_f31;	m_f32 = matrix.m_f32;	m_f33 = matrix.m_f33;
+}
+
+C3DVector::C3DVector() : m_fX(0.0f), m_fY(0.0f), m_fZ(0.0f)
+{
+
+}
+
+C3DVector::C3DVector(float fX, float fY, float fZ)
+{
+	m_fX = fX;
+	m_fY = fY;
+	m_fZ = fZ;
+}
+
+C3DVector::~C3DVector()
+{
+
+}
+
+void C3DVector::Set(float fX, float fY, float fZ)
+{
+	m_fX = fX;
+	m_fY = fY;
+	m_fZ = fZ;
+}
+
+void C3DVector::Set(C3DVector &vector)
+{
+	m_fX = vector.m_fX;
+	m_fY = vector.m_fY;
+	m_fZ = vector.m_fZ;
+}
+
+float C3DVector::GetX(void)
+{
+	return m_fX;
+}
+
+float C3DVector::GetY(void)
+{
+	return m_fY;
+}
+
+float C3DVector::GetZ(void)
+{
+	return m_fZ;
+}
+
+C3DVector C3DVector::GetXYZ(void)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX, m_fY, m_fZ);
+
+	return vResult;
+}
+
+C3DVector& C3DVector::operator=(C3DVector& v)
+{
+	m_fX = v.m_fX;
+	m_fY = v.m_fY;
+	m_fZ = v.m_fZ;
+
+	return *this;
+}
+
+C3DVector C3DVector::operator-(C3DVector& v)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX - v.m_fX, m_fY - v.m_fY, m_fZ - v.m_fZ);
+
+	return vResult;
+}
+
+C3DVector C3DVector::operator-=(C3DVector& v)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX -= v.m_fX, m_fY -= v.m_fY, m_fZ -= v.m_fZ);
+
+	return vResult;
+}
+C3DVector C3DVector::operator+(C3DVector& v)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX + v.m_fX, m_fY + v.m_fY, m_fZ + v.m_fZ);
+
+	return vResult;
+}
+
+
+C3DVector C3DVector::operator+=(C3DVector& v)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX += v.m_fX, m_fY += v.m_fY, m_fZ += v.m_fZ);
+
+	return vResult;
+}
+
+C3DVector C3DVector::operator*(float fS)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX * fS, m_fY * fS, m_fZ * fS);
+
+	return vResult;
+}
+
+//C3DVector C3DVector::operator*(C2DMatrix& m)
+//{
+//	C2DVector vResult;
+//
+//	CVectorOperation::C2DTransform(&vResult, this, &m);
+//
+//	return vResult;
+//}
+
+C3DVector C3DVector::operator*=(float fS)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX *= fS, m_fY *= fS, m_fZ *= fS);
+
+	return vResult;
+}
+
+C3DVector C3DVector::operator/(float fS)
+{
+	C3DVector vResult;
+
+	vResult.Set(m_fX / fS, m_fY / fS, m_fZ/fS);
+
+	return vResult;
 }

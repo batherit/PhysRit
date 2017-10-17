@@ -49,6 +49,10 @@ public:
 	float GetIzz(void);
 	C2DVector GetRelative(void);
 	C2DVector GetPosition(void);
+	float GetAngularA(void);
+	float GetAngularV(void);
+	C2DVector GetLinearA(void);
+	C2DVector GetLinearV(void);
 	C2DVector GetWorldUpV(void);
 	C2DVector GetWorldRightV(void);
 

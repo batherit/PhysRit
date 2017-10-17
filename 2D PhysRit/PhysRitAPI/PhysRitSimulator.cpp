@@ -16,6 +16,9 @@ CPhysRitSimulator::CPhysRitSimulator()
 	c2dCir5 = nullptr;
 	c2dCir6 = nullptr;
 	c2dCir7 = nullptr;
+
+	c2dColCir0 = nullptr;
+	c2dColCir1 = nullptr;
 }
 
 
@@ -31,7 +34,7 @@ void CPhysRitSimulator::BuildObjects()
 
 	c2dCir0 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir1 = new C2DColliderCircle(10.0f, 50.0f);
-	c2dCir2 = new C2DColliderCircle(1.0f, 50.0f);
+	c2dCir2 = new C2DColliderCircle(200.0f, 50.0f);
 	c2dCir3 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir4 = new C2DColliderCircle(1.0f, 50.0f);
 	c2dCir5 = new C2DColliderCircle(1.0f, 50.0f);
@@ -61,6 +64,14 @@ void CPhysRitSimulator::BuildObjects()
 	c2dAssRing->SetAngularV(3.14 / 180.0f * 360.0f);
 	c2dAssRing->SetLinearV(C2DVector(20.0f, 20.0f));
 
+	c2dColCir0 = new C2DColliderCircle(110.0f, 250.0f);
+	c2dColCir1 = new C2DColliderCircle(250.0f, 270.0f);
+
+	c2dColCir0->SetPosition(C2DVector(4500.0f, 250.0f));
+	c2dColCir0->SetLinearV(C2DVector(-800.0f, 0.0f));
+	c2dColCir1->SetPosition(C2DVector(-4500.0f, -250.0f));
+	c2dColCir1->SetLinearV(C2DVector(800.0f, 0.0f));
+
 	m_c2dCamera.GenerateView(C2DVector(0.0f, 0.0f), C2DVector(0.0f, 1.0f));
 	m_c2dCamera.GenerateProj(FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 	m_c2dCamera.GenerateScreen(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -83,6 +94,9 @@ void CPhysRitSimulator::DestroyObjects()
 
 	if (c2dAssCar) delete c2dAssCar;
 	if (c2dAssRing) delete c2dAssRing;
+
+	if (c2dColCir0) delete c2dColCir0;
+	if (c2dColCir1) delete c2dColCir1;
 }
 
 // 충돌체들의 갱신과 렌더를 처리한다.
@@ -117,9 +131,16 @@ void CPhysRitSimulator::Update(HWND hwnd)
 	{
 		c2dCir1->Update(m_Timer.GetTimeElapsed());
 	}
+
+	c2dColCir0->Update(m_Timer.GetTimeElapsed());
+	c2dColCir1->Update(m_Timer.GetTimeElapsed());
 	//c2dAssRing->MoveCollider(C2DVector(mark * 0.0002f, mark * 0.0002f), c2dCir1);
 	//InvalidateRgn(hwnd, NULL, TRUE);
 
+	if (C2DCollisionDetector::C2DIsCollided_(*c2dColCir0, *c2dColCir1, nullptr))
+	{
+		C2DCollisionSolver::C2DImpurse(c2dColCir0, c2dColCir1, 0.8f, 2.0f, nullptr);
+	}
 	
 }
 
@@ -133,6 +154,8 @@ void CPhysRitSimulator::Render(HDC hdc)
 	c2dAssCar->RenderAPI(hdc, &m_c2dCamera);
 	c2dAssRing->RenderAPI(hdc, &m_c2dCamera);
 	if (!c2dAssRing->IsIn(c2dCir1)) c2dCir1->RenderAPI(hdc, nullptr, &m_c2dCamera);
+	c2dColCir0->RenderAPI(hdc, nullptr, &m_c2dCamera);
+	c2dColCir1->RenderAPI(hdc, nullptr, &m_c2dCamera);
 }
 
 //윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 

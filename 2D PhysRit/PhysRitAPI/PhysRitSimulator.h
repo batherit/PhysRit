@@ -20,6 +20,9 @@ private:
 	C2DAssembledColliders *c2dAssCar;
 	C2DAssembledColliders *c2dAssRing;
 
+	C2DColliderCircle *c2dColCir0;
+	C2DColliderCircle *c2dColCir1;
+
 	CTimer m_Timer;
 	C2DCamera m_c2dCamera;
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다.

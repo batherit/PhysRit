@@ -145,6 +145,7 @@
     <ClInclude Include="C2DCamera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="CollisionSolver.h" />
     <ClInclude Include="PhysicalOperation.h" />
     <ClInclude Include="PhysRit.h" />
     <ClInclude Include="PhysRitAPI.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="C2DCamera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CollisionSolver.cpp" />
     <ClCompile Include="PhysicalOperation.cpp" />
     <ClCompile Include="PhysRit.cpp" />
     <ClCompile Include="PhysRitAPI.cpp" />

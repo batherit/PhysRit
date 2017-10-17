@@ -87,6 +87,26 @@ C2DVector C2DAssembledColliders::GetPosition(void)
 	return C2DVector(m_mtxWorld.m_f31, m_mtxWorld.m_f32);
 }
 
+float C2DAssembledColliders::GetAngularA(void)
+{
+	return m_fAngularA;
+}
+
+float C2DAssembledColliders::GetAngularV(void)
+{
+	return m_fAngularV;
+}
+
+C2DVector C2DAssembledColliders::GetLinearA(void)
+{
+	return m_vLinearA;
+}
+
+C2DVector C2DAssembledColliders::GetLinearV(void)
+{
+	return m_vLinearV;
+}
+
 C2DVector C2DAssembledColliders::GetWorldUpV(void)
 {
 	return C2DVector(m_mtxWorld.m_f21, m_mtxWorld.m_f22);

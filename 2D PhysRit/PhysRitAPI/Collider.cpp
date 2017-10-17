@@ -108,6 +108,26 @@ C2DVector C2DCollider::GetPosition(void)
 	return C2DVector(m_mtxWorld.m_f31, m_mtxWorld.m_f32);
 }
 
+float C2DCollider::GetAngularA(void)
+{
+	return m_fAngularA;
+}
+
+float C2DCollider::GetAngularV(void)
+{
+	return m_fAngularV;
+}
+
+C2DVector C2DCollider::GetLinearA(void)
+{
+	return m_vLinearA;
+}
+
+C2DVector C2DCollider::GetLinearV(void)
+{
+	return m_vLinearV;
+}
+
 C2DVector C2DCollider::GetWorldUpV(void)
 {
 	return C2DVector(m_mtxWorld.m_f21, m_mtxWorld.m_f22);
