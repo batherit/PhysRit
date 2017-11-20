@@ -5,28 +5,19 @@
 #include"Collider.h"
 #include<Windows.h>
 
-class C2DAssembledColliders
+class C2DColliders : public C2DCollider
 {
 private:
 	std::vector<C2DCollider*> m_fvtColliders;
-	float m_fTotalMass;								// 총 질량
 	C2DVector m_vCenterOfMass;						// 질량 중심	
-	float m_fTotalIzz;								// 총 관성텐서
-	float m_fAngularA;			// z축에 대한 각가속도 ; rad/s^2
-	float m_fAngularV;			// z축에 대한 갱신 각속도 ; rad/s
-	C2DVector m_vLinearA;		// xy평면에 대한 선가속도
-	C2DVector m_vLinearV;		// xy평면에 대한 선속도 ; m/s
 
-public:
-	/*C2DMatrix m_mtxCenterOfMass;	*/				
-	C2DMatrix m_mtxWorld;
-	
 private:
 	void CalculateInertiaTensor(void);
-	
+
 public:
-	C2DAssembledColliders();
-	~C2DAssembledColliders();
+	C2DColliders();
+	C2DColliders(UINT EF_Flags);
+	virtual ~C2DColliders();
 
 	void SetPosition(C2DVector& vector);
 	void SetAngularA(float fAngularA);
@@ -41,7 +32,8 @@ public:
 	C2DVector GetLinearV(void);
 	C2DVector GetWorldUpV(void);
 	C2DVector GetWorldRightV(void);
-	int GetNumOfCollider(void);
+	int GetNumOfColliders(void);
+	C2DCollider* GetColliderByIndex(int idx);
 	float GetMass(void);
 	C2DVector GetCenterOfMass(void);
 	float GetIzz(void);
@@ -54,11 +46,21 @@ public:
 	void MoveCollider(C2DVector &v, C2DCollider* pCollider);
 
 	void Move(C2DVector& vector);
-	void RotateACCoordZ(float fRadian);
-	void RotateCMCoordZ(float fRadian);
+	void RotateACCoordZ(float fRadian);			// 로컬 중심 회전
+	void RotateCMCoordZ(float fRadian);			// 질량 중심 회전
 
+	/*bool IsCollided_Index(int idx, C2DColliderCircle* circle, C2DVector* colPos);
+	bool IsCollided_Index(int idx, C2DColliderRect* rect, C2DVector* colPos);
+	bool IsCollided_Index(int idx, C2DColliders* colliders, C2DVector* colPos);*/
+	bool IsCollided_(C2DColliderCircle* circle, C2DVector* colPos);
+	bool IsCollided_(C2DColliderRect* rect, C2DVector* colPos);
+	bool IsCollided_(C2DColliders* colliders, C2DVector* colPos);
+	void Impurse(C2DColliderCircle *pCircle, float fRest, float fFric, C2DVector* colPos);
+	void Impurse(C2DColliderRect *pRect, float fRest, float fFric, C2DVector* colPos);
+	void Impurse(C2DColliders *pColliders, float fRest, float fFric, C2DVector* colPos);
 	void Update(float fElapsedTime);		// 주어진 각속도, 선속도에 근거하여 회전운동과 선운동을 갱신.
 
 	void RenderAPI(HDC hdc, C2DCamera *pCamera = nullptr);
+	void RenderAPI(HDC hdc, C2DMatrix *AssColsM = nullptr, C2DCamera *pCamera = nullptr);
 };
 

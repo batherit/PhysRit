@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Collider.h"
+#include "Colliders.h"
 
 class CCollisionDetector
 {
@@ -27,6 +28,17 @@ public :
 	/*                            사각형과 사각형의 충돌                            */
 	static bool C2DIsCollided_Nearest(C2DColliderRect rect1, C2DColliderRect rect2, C2DVector* colPos);
 	static bool C2DIsCollided_NearestOBB(C2DColliderRect rect1, C2DColliderRect rect2, C2DVector* colPos);
-	static bool C2DIsCollided_OBB(C2DColliderRect rect1, C2DColliderRect rect2, C2DVector* colPos);
+	static bool C2DIsCollided_(C2DColliderRect rect1, C2DColliderRect rect2, C2DVector* colPos);
+	
+	/*                            원과 콜라이더즈의 충돌                            */
+	static bool C2DIsCollided_(C2DColliderCircle circle, C2DColliders colliders, C2DVector* colPos);
+	static bool C2DIsCollided_(C2DColliders colliders, C2DColliderCircle circle, C2DVector* colPos);
+
+	/*                            사각형과 콜라이더즈의 충돌                            */
+	static bool C2DIsCollided_(C2DColliderRect rect, C2DColliders colliders, C2DVector* colPos);
+	static bool C2DIsCollided_(C2DColliders colliders, C2DColliderRect rect, C2DVector* colPos);
+
+	/*                            콜라이더즈와 콜라이더즈의 충돌                            */
+	static bool C2DIsCollided_(C2DColliders colliders1, C2DColliders colliders2, C2DVector* colPos);
 };
 

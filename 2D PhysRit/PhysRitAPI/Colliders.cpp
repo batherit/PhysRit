@@ -1,41 +1,55 @@
-#include "C2DAssembledColliders.h"
+#include "Colliders.h"
+#include "CollisionDetector.h"
 
 
 
-C2DAssembledColliders::C2DAssembledColliders() : m_fAngularA(0.0f), m_fAngularV(0.0f)
+C2DColliders::C2DColliders()
 {
-	m_fTotalMass = 0.0f;
-	m_vCenterOfMass = C2DVector(0.0f, 0.0f);
-	m_fTotalIzz = 0.0f;
+	m_EF_Flags = 0;
+	m_eType = COLLIDER_TYPE_COLLIDERS;
+	m_fMass = 0.0f;
+	m_fIzz = 0.0f; 
+	m_fAngularA = 0.0f;
+	m_fAngularV = 0.0f;
+}
+
+C2DColliders::C2DColliders(UINT EF_Flags) : C2DCollider(0.0f, EF_Flags)
+{
+	m_EF_Flags = EF_Flags;
+	m_eType = COLLIDER_TYPE_COLLIDERS;
+	m_fMass = 0.0f;
+	m_fIzz = 0.0f;
+	m_fAngularA = 0.0f;
+	m_fAngularV = 0.0f;
 }
 
 
-C2DAssembledColliders::~C2DAssembledColliders()
+C2DColliders::~C2DColliders()
 {
 }
 
-void C2DAssembledColliders::CalculateInertiaTensor(void)
+void C2DColliders::CalculateInertiaTensor(void)
 {
 	C2DVector vSumPrimaryMoment;
 	C2DVector vOldCenterOfMass;
 	C2DVector vRelative;
 
-	m_fTotalMass = 0.0f;
+	m_fMass = 0.0f;
 	for (auto &collider : m_fvtColliders)
 	{
-		m_fTotalMass += collider->GetMass();
-		vSumPrimaryMoment +=  collider->GetPosition() * collider->GetMass();
+		m_fMass += collider->GetMass();
+		vSumPrimaryMoment += collider->GetPosition() * collider->GetMass();
 	}
 
 	vOldCenterOfMass = m_vCenterOfMass;
 	m_vCenterOfMass = C2DVector(0.0f, 0.0f);
 	/*m_mtxCenterOfMass.Identify();*/
 
-	if (m_fTotalMass > 0.0f)
+	if (m_fMass > 0.0f)
 	{
-		m_vCenterOfMass = vSumPrimaryMoment / m_fTotalMass;								// 나누기는 분모 != 0 이라는 사실을 절대 잊지 말 것 'ㅅ'/
-		//m_mtxCenterOfMass.m_f31 = -m_vCenterOfMass.GetX();
-		//m_mtxCenterOfMass.m_f32 = -m_vCenterOfMass.GetY();		// 로컬 좌표계에서 정의되는 질량 중심의 좌표를 일단 행렬에 저장.
+		m_vCenterOfMass = vSumPrimaryMoment / m_fMass;								// 나누기는 분모 != 0 이라는 사실을 절대 잊지 말 것 'ㅅ'/
+																						//m_mtxCenterOfMass.m_f31 = -m_vCenterOfMass.GetX();
+																						//m_mtxCenterOfMass.m_f32 = -m_vCenterOfMass.GetY();		// 로컬 좌표계에서 정의되는 질량 중심의 좌표를 일단 행렬에 저장.
 	}
 
 	vRelative = m_vCenterOfMass - vOldCenterOfMass;
@@ -44,100 +58,106 @@ void C2DAssembledColliders::CalculateInertiaTensor(void)
 	SetLinearV(C2DVector(-vRelative.GetY() * m_fAngularV + m_vLinearV.GetX(), vRelative.GetX() * m_fAngularV + m_vLinearV.GetY()));
 	//SetAngularV(m_fAngularA);
 
-	m_fTotalIzz = 0.0f;
+	m_fIzz = 0.0f;
 	for (auto &collider : m_fvtColliders)
 	{
 		collider->SetRelative(collider->GetPosition() - m_vCenterOfMass);
 
 		// 축 전송 공식
-		m_fTotalIzz += 
-			collider->GetIzz() + collider->GetMass() 
+		m_fIzz +=
+			collider->GetIzz() + collider->GetMass()
 			* (collider->GetRelative().GetX() * collider->GetRelative().GetX()
 				+ collider->GetRelative().GetY() * collider->GetRelative().GetY());
 	}
 }
 
-void C2DAssembledColliders::SetPosition(C2DVector& vector)
+void C2DColliders::SetPosition(C2DVector& vector)
 {
 	m_mtxWorld.m_f31 = vector.m_fX;
 	m_mtxWorld.m_f32 = vector.m_fY;
 	m_mtxWorld.m_f33 = 1.0f;
 }
 
-void C2DAssembledColliders::SetAngularA(float fAngularA)
+void C2DColliders::SetAngularA(float fAngularA)
 {
 	m_fAngularA = fAngularA;
 }
 
-void C2DAssembledColliders::SetAngularV(float fAngularV)
+void C2DColliders::SetAngularV(float fAngularV)
 {
 	m_fAngularV = fAngularV;
 }
 
-void C2DAssembledColliders::SetLinearA(C2DVector& vLinearA)
+void C2DColliders::SetLinearA(C2DVector& vLinearA)
 {
 	m_vLinearA.Set(vLinearA);
 }
 
-void C2DAssembledColliders::SetLinearV(C2DVector& vLinearV)
+void C2DColliders::SetLinearV(C2DVector& vLinearV)
 {
 	m_vLinearV.Set(vLinearV);
 }
 
-C2DVector C2DAssembledColliders::GetPosition(void)
+C2DVector C2DColliders::GetPosition(void)
 {
 	return C2DVector(m_mtxWorld.m_f31, m_mtxWorld.m_f32);
 }
 
-float C2DAssembledColliders::GetAngularA(void)
+float C2DColliders::GetAngularA(void)
 {
 	return m_fAngularA;
 }
 
-float C2DAssembledColliders::GetAngularV(void)
+float C2DColliders::GetAngularV(void)
 {
 	return m_fAngularV;
 }
 
-C2DVector C2DAssembledColliders::GetLinearA(void)
+C2DVector C2DColliders::GetLinearA(void)
 {
 	return m_vLinearA;
 }
 
-C2DVector C2DAssembledColliders::GetLinearV(void)
+C2DVector C2DColliders::GetLinearV(void)
 {
 	return m_vLinearV;
 }
 
-C2DVector C2DAssembledColliders::GetWorldUpV(void)
+C2DVector C2DColliders::GetWorldUpV(void)
 {
 	return C2DVector(m_mtxWorld.m_f21, m_mtxWorld.m_f22);
 }
 
-C2DVector C2DAssembledColliders::GetWorldRightV(void)
+C2DVector C2DColliders::GetWorldRightV(void)
 {
 	return C2DVector(m_mtxWorld.m_f11, m_mtxWorld.m_f12);
 }
 
-int C2DAssembledColliders::GetNumOfCollider(void)
+int C2DColliders::GetNumOfColliders(void)
 {
 	return m_fvtColliders.size();
 }
 
-float C2DAssembledColliders::GetMass(void)
+C2DCollider* C2DColliders::GetColliderByIndex(int idx)
 {
-	return m_fTotalMass;
+	if (idx < 0 || idx >= m_fvtColliders.size()) return nullptr;
+	return m_fvtColliders[idx];
 }
-C2DVector C2DAssembledColliders::GetCenterOfMass(void)
+
+float C2DColliders::GetMass(void)
+{
+	return m_fMass;
+}
+C2DVector C2DColliders::GetCenterOfMass(void)
 {
 	return m_vCenterOfMass * m_mtxWorld;
 }
-float C2DAssembledColliders::GetIzz(void)
+float C2DColliders::GetIzz(void)
 {
-	return m_fTotalIzz;
+	return m_fIzz;
 }
 
-bool C2DAssembledColliders::IsIn(C2DCollider *pCollider)
+bool C2DColliders::IsIn(C2DCollider *pCollider)
 {
 	if (!pCollider) return false;
 
@@ -150,18 +170,19 @@ bool C2DAssembledColliders::IsIn(C2DCollider *pCollider)
 	return false;
 }
 
-void C2DAssembledColliders::AttachCollider(C2DVector inPos, float fRotRadian, C2DCollider* pCollider)
+void C2DColliders::AttachCollider(C2DVector inPos, float fRotRadian, C2DCollider* pCollider)
 {
 	if (!pCollider) return;
 
 	pCollider->RotateZ(fRotRadian);
 	pCollider->SetPosition(inPos);
+	pCollider->SetParent(this);
 	m_fvtColliders.push_back(pCollider);			// 어셈블드콜라이더즈 좌표계에 정의됨.
 
 	CalculateInertiaTensor();
 }
 
-void C2DAssembledColliders::DetachCollider(C2DCollider* pCollider)
+void C2DColliders::DetachCollider(C2DCollider* pCollider)
 {
 	if (!pCollider) return;
 
@@ -175,16 +196,17 @@ void C2DAssembledColliders::DetachCollider(C2DCollider* pCollider)
 		vRelative.Set(vRelative.GetX() - m_mtxWorld.m_f31, vRelative.GetY() - m_mtxWorld.m_f32);
 		(*iter)->SetLinearV(C2DVector(-vRelative.GetY() * m_fAngularV + m_vLinearV.GetX(), vRelative.GetX() * m_fAngularV + m_vLinearV.GetY()));
 		(*iter)->SetRelative(C2DVector(0.0f, 0.0f));		// 유일한 콜라이더가 되므로 상대 벡터는 (0, 0);
-		
+
 		CVectorOperation::C2DTransform(&vRelative, &(*iter)->GetPosition(), &m_mtxWorld);
 		(*iter)->SetPosition(vRelative);
+		(*iter)->SetParent(nullptr);
 		m_fvtColliders.erase(iter);
 
 		CalculateInertiaTensor();
 	}
 }
 
-void C2DAssembledColliders::MoveCollider(C2DVector &v, C2DCollider* pCollider)
+void C2DColliders::MoveCollider(C2DVector &v, C2DCollider* pCollider)
 {
 	if (!pCollider) return;
 
@@ -198,14 +220,14 @@ void C2DAssembledColliders::MoveCollider(C2DVector &v, C2DCollider* pCollider)
 	}
 }
 
-void C2DAssembledColliders::Move(C2DVector& vector)
+void C2DColliders::Move(C2DVector& vector)
 {
 	m_mtxWorld.m_f31 += vector.GetX();
 	m_mtxWorld.m_f32 += vector.GetY();
 	m_mtxWorld.m_f33 = 1.0f;
 }
 
-void C2DAssembledColliders::RotateACCoordZ(float fRadian)
+void C2DColliders::RotateACCoordZ(float fRadian)
 {
 	C2DMatrix mtxRotate;
 
@@ -215,7 +237,7 @@ void C2DAssembledColliders::RotateACCoordZ(float fRadian)
 	CVectorOperation::C2DTransform(&this->m_mtxWorld, &mtxRotate, &this->m_mtxWorld);
 }
 
-void C2DAssembledColliders::RotateCMCoordZ(float fRadian)
+void C2DColliders::RotateCMCoordZ(float fRadian)
 {
 	C2DMatrix mtxTRT;
 	C2DMatrix mtxRotate;
@@ -234,7 +256,99 @@ void C2DAssembledColliders::RotateCMCoordZ(float fRadian)
 	CVectorOperation::C2DTransform(&this->m_mtxWorld, &this->m_mtxWorld, &mtxTRT);
 }
 
-void C2DAssembledColliders::Update(float fElapsedTime)
+bool C2DColliders::IsCollided_(C2DColliderCircle* circle, C2DVector* colPos)
+{
+	bool bIsCollided = false;
+
+	for (auto &collider : m_fvtColliders)
+	{
+		if (collider->IsCollided_(circle, colPos))
+		{
+			bIsCollided = true;
+			break;
+		}
+	}
+
+	return bIsCollided;
+}
+
+bool C2DColliders::IsCollided_(C2DColliderRect* rect, C2DVector* colPos)
+{
+	bool bIsCollided = false;
+
+	for (auto &collider : m_fvtColliders)
+	{
+		if (collider->IsCollided_(rect, colPos))
+		{
+			bIsCollided = true;
+			break;
+		}
+	}
+
+	return bIsCollided;
+}
+
+bool C2DColliders::IsCollided_(C2DColliders* colliders, C2DVector* colPos)
+{
+	bool bIsCollided = false;
+
+	for (auto &collider : m_fvtColliders)
+	{
+		if (collider->IsCollided_(colliders, colPos))
+		{
+			bIsCollided = true;
+			break;
+		}
+	}
+
+	return bIsCollided;
+}
+
+void C2DColliders::Impurse(C2DColliderCircle *pCircle, float fRest, float fFric, C2DVector* colPos)
+{
+	pCircle->Impurse(this, fRest, fFric, colPos);
+}
+
+void C2DColliders::Impurse(C2DColliderRect *pRect, float fRest, float fFric, C2DVector* colPos)
+{
+
+}
+
+void C2DColliders::Impurse(C2DColliders *pColliders, float fRest, float fFric, C2DVector* colPos)
+{
+
+}
+
+//bool C2DColliders::IsCollided_Index(int idx, C2DColliderCircle* circle, C2DVector* colPos)
+//{
+//	/*int iNumOfColliders = m_fvtColliders.size();
+//	bool bIsCollided = false;
+//
+//	if (!iNumOfColliders) return false;
+//	if (idx < 0 || idx >= iNumOfColliders) return false;
+//
+//	for (aut
+//		if (m_fvtColliders[])
+//		{
+//			bIsCollided = true;
+//			break;
+//		}
+//	}
+//
+//	return bIsCollided;*/
+//}
+//
+//bool C2DColliders::IsCollided_Index(int idx, C2DColliderRect* rect, C2DVector* colPos)
+//{
+//
+//}
+//
+//bool C2DColliders::IsCollided_Index(int idx, C2DColliders* colliders, C2DVector* colPos)
+//{
+//
+//}
+
+void C2DColliders::Update(float fElapsedTime)
 {
 	float fUpdatedAngularV = 0.0f;
 	float fRad = 0.0f;
@@ -242,6 +356,8 @@ void C2DAssembledColliders::Update(float fElapsedTime)
 	C2DVector vMove;
 
 	fUpdatedAngularV = m_fAngularV + m_fAngularA * fElapsedTime;
+
+	m_vLinearA.m_fY = m_EF_Flags & EF_GRAVITY ? -GRAVITATIONAL_ACCELERATION_MAGNITUDE : m_vLinearA.m_fY;
 	vUpdatedLinearV = m_vLinearV + m_vLinearA * fElapsedTime;
 
 	fRad = (fUpdatedAngularV + m_fAngularV) / 2.0f * fElapsedTime;
@@ -254,14 +370,16 @@ void C2DAssembledColliders::Update(float fElapsedTime)
 	m_fAngularV = fUpdatedAngularV;
 }
 
-void C2DAssembledColliders::RenderAPI(HDC hdc, C2DCamera *pCamera)
+void C2DColliders::RenderAPI(HDC hdc, C2DCamera *pCamera)
 {
-	C2DMatrix mtxWorld;
-	//C2DMatrix mtxCenterOfMassW;
+	for (auto &collider : m_fvtColliders)
+	{
+		collider->RenderAPI(hdc, &m_mtxWorld, pCamera);
+	}
+}
 
-	//CVectorOperation::C2DTransform(&mtxCenterOfMassW, &m_mtxCenterOfMass, &m_mtxWorld);
-	//CVectorOperation::C2DTransform(&mtxWorld, &m_mtxWorld, &m_mtxCenterOfMass);
-
+void C2DColliders::RenderAPI(HDC hdc, C2DMatrix *AssColsM, C2DCamera *pCamera)
+{
 	for (auto &collider : m_fvtColliders)
 	{
 		collider->RenderAPI(hdc, &m_mtxWorld, pCamera);

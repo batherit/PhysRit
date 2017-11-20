@@ -144,6 +144,7 @@
     <ClInclude Include="C2DAssembledColliders.h" />
     <ClInclude Include="C2DCamera.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="Colliders.h" />
     <ClInclude Include="CollisionDetector.h" />
     <ClInclude Include="CollisionSolver.h" />
     <ClInclude Include="PhysicalOperation.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="C2DAssembledColliders.cpp" />
     <ClCompile Include="C2DCamera.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Colliders.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
     <ClCompile Include="CollisionSolver.cpp" />
     <ClCompile Include="PhysicalOperation.cpp" />

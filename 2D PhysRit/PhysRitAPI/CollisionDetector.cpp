@@ -320,7 +320,7 @@ bool C2DCollisionDetector::C2DIsCollided_NearestOBB(C2DColliderRect rect1, C2DCo
 	return true;
 }
 
-bool C2DCollisionDetector::C2DIsCollided_OBB(C2DColliderRect rect1, C2DColliderRect rect2, C2DVector* colPos)
+bool C2DCollisionDetector::C2DIsCollided_(C2DColliderRect rect1, C2DColliderRect rect2, C2DVector* colPos)
 {
 	C2DVector vProjOfDir;
 	float fLenOfProjDir = -1.0f;
@@ -390,4 +390,43 @@ bool C2DCollisionDetector::C2DIsCollided_OBB(C2DColliderRect rect1, C2DColliderR
 	}
 
 	return true;
+}
+
+/*                            원과 콜라이더즈의 충돌                            */
+bool C2DCollisionDetector::C2DIsCollided_(C2DColliderCircle circle, C2DColliders colliders, C2DVector* colPos)
+{
+	int iNumOfColliders = colliders.GetNumOfColliders();
+
+	if (iNumOfColliders <= 0) return false;
+
+	for (int i = 0; i < iNumOfColliders; i++)
+	{
+		if (colliders.GetColliderByIndex(i)->IsCollided_(&circle, colPos))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool C2DCollisionDetector::C2DIsCollided_(C2DColliders colliders, C2DColliderCircle circle, C2DVector* colPos)
+{
+	return C2DIsCollided_(circle, colliders, colPos);
+}
+
+/*                            사각형과 콜라이더즈의 충돌                            */
+bool C2DCollisionDetector::C2DIsCollided_(C2DColliderRect rect, C2DColliders colliders, C2DVector* colPos)
+{
+	return false;
+}
+
+bool C2DCollisionDetector::C2DIsCollided_(C2DColliders colliders, C2DColliderRect rect, C2DVector* colPos)
+{
+	return C2DIsCollided_(rect, colliders, colPos);
+}
+
+/*                            콜라이더즈와 콜라이더즈의 충돌                            */
+bool C2DCollisionDetector::C2DIsCollided_(C2DColliders colliders1, C2DColliders colliders2, C2DVector* colPos)
+{
+	return false;
 }

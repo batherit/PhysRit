@@ -53,11 +53,11 @@ void C2DCollisionSolver::C2DImpurse(C2DColliderCircle *pCir1, C2DColliderCircle 
 	pCir2->Move(vProofDistance * -1.0f);
 
 	// 노멀 속도를 구한다.
-	vNormalV1 = vNormal * CVectorOperation::C2DDotProduct(&pCir1->GetLinearV(), &vNormal);
-	vNormalV2 = vNormal * CVectorOperation::C2DDotProduct(&pCir2->GetLinearV(), &vNormal);
+	vNormalV1 = vNormal * CVectorOperation::C2DDotProduct(&(pCir1->GetParent() ? pCir1->GetParent()->GetLinearV() : pCir1->GetLinearV()), &vNormal);
+	vNormalV2 = vNormal * CVectorOperation::C2DDotProduct(&(pCir2->GetParent() ? pCir2->GetParent()->GetLinearV() : pCir2->GetLinearV()), &vNormal);
 
 	// 접촉 접선을 구한다.
-	vRelativeV.Set(pCir1->GetLinearV() - pCir2->GetLinearV());
+	vRelativeV.Set((pCir1->GetParent() ? pCir1->GetParent()->GetLinearV() : pCir1->GetLinearV()) - (pCir2->GetParent() ? pCir2->GetParent()->GetLinearV() : pCir2->GetLinearV()));
 	C3DVector v3dNormal(vNormal.GetX(), vNormal.GetY(), 0.0f);
 	C3DVector v3dRelativeV(vRelativeV.GetX(), vRelativeV.GetY(), 0.0f);
 	C3DVector v3dTan;
@@ -71,17 +71,21 @@ void C2DCollisionSolver::C2DImpurse(C2DColliderCircle *pCir1, C2DColliderCircle 
 	C3DVector v3dRelative2;
 	float fCirI1;
 	float fCirI2;
-	CVectorOperation::C2DTransform((C2DVector*)&v3dRelative1, &pCir1->GetRelative(), &pCir1->m_mtxWorld);
-	v3dRelative1.m_fX -= pCir1->m_mtxWorld.m_f31;
-	v3dRelative1.m_fY -= pCir1->m_mtxWorld.m_f32;
+	CVectorOperation::C2DTransform((C2DVector*)&v3dRelative1, &pCir1->GetRelative(), &(pCir1->GetParent() ? pCir1->GetParent()->m_mtxWorld : pCir1->m_mtxWorld));
+	v3dRelative1.m_fX -= (pCir1->GetParent() ? pCir1->GetParent()->m_mtxWorld.m_f31 : pCir1->m_mtxWorld.m_f31);
+	v3dRelative1.m_fY -= (pCir1->GetParent() ? pCir1->GetParent()->m_mtxWorld.m_f32 : pCir1->m_mtxWorld.m_f32);
 	v3dRelative1.m_fZ = 0.0f;
 	fCirI1 = CVectorOperation::C3DDotProduct(&v3dNormal, &CVectorOperation::C3DCross(&CVectorOperation::C3DCross(&v3dRelative1, &v3dNormal), &v3dRelative1));
-	CVectorOperation::C2DTransform((C2DVector*)&v3dRelative2, &pCir2->GetRelative(), &pCir2->m_mtxWorld);
-	v3dRelative2.m_fX -= pCir2->m_mtxWorld.m_f31;
-	v3dRelative2.m_fY -= pCir2->m_mtxWorld.m_f32;
+	CVectorOperation::C2DTransform((C2DVector*)&v3dRelative2, &pCir2->GetRelative(), &(pCir2->GetParent() ? pCir2->GetParent()->m_mtxWorld : pCir2->m_mtxWorld));
+	v3dRelative2.m_fX -= (pCir2->GetParent() ? pCir2->GetParent()->m_mtxWorld.m_f31 : pCir2->m_mtxWorld.m_f31);
+	v3dRelative2.m_fY -= (pCir2->GetParent() ? pCir2->GetParent()->m_mtxWorld.m_f32 : pCir2->m_mtxWorld.m_f32);
 	v3dRelative2.m_fZ = 0.0f;
 	fCirI2 = CVectorOperation::C3DDotProduct(&v3dNormal, &CVectorOperation::C3DCross(&CVectorOperation::C3DCross(&v3dRelative2, &v3dNormal), &v3dRelative2));
-	vJn.Set((vNormalV1 - vNormalV2) * (1.0f + fRest) / (1.0f / pCir1->GetMass() + 1.0f / pCir2->GetMass() + fCirI1 / pCir1->GetIzz() + fCirI2 / pCir2->GetIzz()));
+	vJn.Set((vNormalV1 - vNormalV2) * (1.0f + fRest) 
+		/ (1.0f / (pCir1->GetParent() ? pCir1->GetParent()->GetMass() : pCir1->GetMass())
+		+ 1.0f / (pCir2->GetParent() ? pCir2->GetParent()->GetMass() : pCir2->GetMass()) 
+		+ fCirI1 / (pCir1->GetParent() ? pCir1->GetParent()->GetIzz() : pCir1->GetIzz())
+		+ fCirI2 / (pCir2->GetParent() ? pCir2->GetParent()->GetIzz() : pCir2->GetIzz())));
 	vJn *= -1.0f;
 
 	// 마찰량을 구한다.
@@ -93,18 +97,24 @@ void C2DCollisionSolver::C2DImpurse(C2DColliderCircle *pCir1, C2DColliderCircle 
 	vJ.Set(vJn + vJt);
 
 	// 선속도를 갱신한다.
-	pCir1->SetLinearV(pCir1->GetLinearV() + vJ / pCir1->GetMass());
-	pCir2->SetLinearV(pCir2->GetLinearV() + (vJ * -1.0f) / pCir2->GetMass());
+	if(pCir1->GetEF_Flags() & EF_IMPURSE) pCir1->SetLinearV((pCir1->GetParent() ? pCir1->GetParent()->GetLinearV() : pCir1->GetLinearV()) + vJ / (pCir1->GetParent() ? pCir1->GetParent()->GetMass() : pCir1->GetMass()));
+	if (pCir2->GetEF_Flags() & EF_IMPURSE) pCir2->SetLinearV((pCir2->GetParent() ? pCir2->GetParent()->GetLinearV() : pCir2->GetLinearV()) + (vJ * -1.0f) / (pCir2->GetParent() ? pCir2->GetParent()->GetMass() : pCir2->GetMass()));
 
 	// 각속도를 갱신한다.
 	
 	C3DVector v3dJ(vJ.GetX(), vJ.GetY(), 0.0f);
 	
-	CVectorOperation::C3DCross(&v3dRelative1, &v3dRelative1, &v3dJ);
-	pCir1->SetAngularV(pCir1->GetAngularV() + v3dRelative1.GetZ() / pCir1->GetIzz());
+	if (pCir1->GetEF_Flags() & EF_IMPURSE)
+	{
+		CVectorOperation::C3DCross(&v3dRelative1, &v3dRelative1, &v3dJ);
+		pCir1->SetAngularV((pCir1->GetParent() ? pCir1->GetParent()->GetAngularV() : pCir1->GetAngularV()) + v3dRelative1.GetZ() / (pCir1->GetParent() ? pCir1->GetParent()->GetIzz() : pCir1->GetIzz()));
+	}
 
-	CVectorOperation::C3DCross(&v3dRelative2, &v3dRelative2, &v3dJ);
-	pCir2->SetAngularV(pCir2->GetAngularV() + (v3dRelative2.GetZ() * -1.0f) / pCir2->GetIzz());
+	if (pCir2->GetEF_Flags() & EF_IMPURSE)
+	{
+		CVectorOperation::C3DCross(&v3dRelative2, &v3dRelative2, &v3dJ);
+		pCir2->SetAngularV((pCir2->GetParent() ? pCir2->GetParent()->GetAngularV() : pCir2->GetAngularV()) + (v3dRelative2.GetZ() * -1.0f) / (pCir2->GetParent() ? pCir2->GetParent()->GetIzz() : pCir2->GetIzz()));
+	}
 }
 
 void C2DCollisionSolver::C2DImpurse(C2DColliderCircle *pCir, C2DColliderRect *pRect, float fRest, float fFric, C2DVector* colPos)
@@ -120,4 +130,25 @@ void C2DCollisionSolver::C2DImpurse(C2DColliderRect *pRect, C2DColliderCircle *p
 void C2DCollisionSolver::C2DImpurse(C2DColliderRect *pRect1, C2DColliderRect *pRect2, float fRest, float fFric, C2DVector* colPos)
 {
 
+}
+
+void C2DCollisionSolver::C2DImpurse(C2DColliderCircle *pCir, C2DColliders *pCols, float fRest, float fFric, C2DVector* colPos)
+{
+	int iNumOfColliders = pCols->GetNumOfColliders();
+
+	if (iNumOfColliders <= 0) return;
+
+	for (int i = 0; i < iNumOfColliders; i++)
+	{
+		if (pCols->GetColliderByIndex(i)->IsCollided_(pCir, colPos))
+		{
+			pCols->GetColliderByIndex(i)->Impurse(pCir, fRest, fFric, colPos);
+			return;
+		}
+	}
+}
+
+void C2DCollisionSolver::C2DImpurse(C2DColliders *pCols, C2DColliderCircle *pCir, float fRest, float fFric, C2DVector* colPos)
+{
+	C2DImpurse(pCir, pCols, fRest, fFric, colPos);
 }
