@@ -316,7 +316,42 @@ void C2DColliders::Impurse(C2DColliderRect *pRect, float fRest, float fFric, C2D
 
 void C2DColliders::Impurse(C2DColliders *pColliders, float fRest, float fFric, C2DVector* colPos)
 {
+	int iNumOfColliders = pColliders->GetNumOfColliders();
 
+	if (iNumOfColliders <= 0) return;
+
+	for (int i = 0; i < m_fvtColliders.size(); i++)
+	{
+		for (int j = 0; j < iNumOfColliders; j++)
+		{
+			switch (m_fvtColliders[i]->GetType())
+			{
+			case COLLIDER_TYPE_CIRCLE:
+				if (m_fvtColliders[i]->IsCollided_(dynamic_cast<C2DColliderCircle*> (pColliders->GetColliderByIndex(j)), nullptr))
+				{
+					// 충격량 기반 해결
+					m_fvtColliders[i]->Impurse(dynamic_cast<C2DColliderCircle*> (pColliders->GetColliderByIndex(j)), fRest, fFric, nullptr);
+				}
+				break;
+			case COLLIDER_TYPE_RECT:
+				if (m_fvtColliders[i]->IsCollided_(dynamic_cast<C2DColliderRect*> (pColliders->GetColliderByIndex(j)), nullptr))
+				{
+					// 충격량 기반 해결
+					m_fvtColliders[i]->Impurse(dynamic_cast<C2DColliderRect*> (pColliders->GetColliderByIndex(j)), fRest, fFric, nullptr);
+				}
+				break;
+			case COLLIDER_TYPE_COLLIDERS:
+				if (m_fvtColliders[i]->IsCollided_(dynamic_cast<C2DColliders*> (pColliders->GetColliderByIndex(j)), nullptr))
+				{
+					// 충격량 기반 해결
+					m_fvtColliders[i]->Impurse(dynamic_cast<C2DColliders*> (pColliders->GetColliderByIndex(j)), fRest, fFric, nullptr);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
 //bool C2DColliders::IsCollided_Index(int idx, C2DColliderCircle* circle, C2DVector* colPos)

@@ -332,7 +332,7 @@ void C2DColliderCircle::Impurse(C2DColliders *pColliders, float fRest, float fFr
 	{
 		if (pColliders->GetColliderByIndex(i)->IsCollided_(this, colPos))
 		{
-			pColliders->GetColliderByIndex(i)->Impurse(this, 0.8f, 0.0f, colPos);
+			pColliders->GetColliderByIndex(i)->Impurse(this, fRest, fFric, colPos);
 		}
 	}
 }

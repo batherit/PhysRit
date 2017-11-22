@@ -141,7 +141,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C2DAssembledColliders.h" />
     <ClInclude Include="C2DCamera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Colliders.h" />
@@ -158,7 +157,6 @@
     <ClInclude Include="VectorOperation.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C2DAssembledColliders.cpp" />
     <ClCompile Include="C2DCamera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Colliders.cpp" />

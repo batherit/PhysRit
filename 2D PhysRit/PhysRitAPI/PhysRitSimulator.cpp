@@ -58,21 +58,21 @@ void CPhysRitSimulator::CollisionProcessor(void)
 				if (m_fvtColliderList[i]->IsCollided_(dynamic_cast<C2DColliderCircle*> (m_fvtColliderList[j]), nullptr))
 				{
 					// 충격량 기반 해결
-					m_fvtColliderList[i]->Impurse(dynamic_cast<C2DColliderCircle*> (m_fvtColliderList[j]), 0.6f, 0.0f, nullptr);
+					m_fvtColliderList[i]->Impurse(dynamic_cast<C2DColliderCircle*> (m_fvtColliderList[j]), 0.6f, 0.f, nullptr);
 				}
 				break;
 			case COLLIDER_TYPE_RECT:
 				if (m_fvtColliderList[i]->IsCollided_(dynamic_cast<C2DColliderRect*> (m_fvtColliderList[j]), nullptr))
 				{
 					// 충격량 기반 해결
-					m_fvtColliderList[i]->Impurse(dynamic_cast<C2DColliderRect*> (m_fvtColliderList[j]), 0.6f, 2.0f, nullptr);
+					m_fvtColliderList[i]->Impurse(dynamic_cast<C2DColliderRect*> (m_fvtColliderList[j]), 0.7f, 0.0f, nullptr);
 				}
 				break;
 			case COLLIDER_TYPE_COLLIDERS:
 				if (m_fvtColliderList[i]->IsCollided_(dynamic_cast<C2DColliders*> (m_fvtColliderList[j]), nullptr))
 				{
 					// 충격량 기반 해결
-					m_fvtColliderList[i]->Impurse(dynamic_cast<C2DColliders*> (m_fvtColliderList[j]), 0.6f, 0.0f, nullptr);
+					m_fvtColliderList[i]->Impurse(dynamic_cast<C2DColliders*> (m_fvtColliderList[j]), 0.6f, 0.f, nullptr);
 				}
 				break;
 			default:
@@ -89,7 +89,7 @@ void CPhysRitSimulator::Update(HWND hwnd)
 
 	for (auto &collider : m_fvtColliderList)
 	{
-		collider->Update(m_Timer.GetTimeElapsed());
+		collider->Update(m_Timer.GetTimeElapsed()/2.5f);
 	}
 	CollisionProcessor();
 }

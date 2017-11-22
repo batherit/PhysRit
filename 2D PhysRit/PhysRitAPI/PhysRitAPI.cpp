@@ -134,37 +134,60 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    gPhysRitSimulator.BuildObjects();
 
+   C2DColliders* c2dColObs = new C2DColliders();
    for (int i = 0; i < MAX_OBSTACLES; i++)
    {
-	   c2dCir[i] = new C2DColliderCircle(100.0f, 20.0f, 0);
-	   c2dCir[i]->SetPosition(C2DVector(400.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i) , 400.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i)));
+	   c2dCir[i] = new C2DColliderCircle(1.0f, 25.0f / 10.0f, 0);
+	   c2dCir[i]->SetPosition(C2DVector(400.0f / 10.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i) , 400.0f / 10.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i)));
 	   gPhysRitSimulator.PushToColList(c2dCir[i]);
    }
 
    for (int i = 0; i < MAX_OBSTACLES1; i++)
    {
-	   c2dCir1[i] = new C2DColliderCircle(100.0f, 15.0f, 0);
-	   c2dCir1[i]->SetPosition(C2DVector(200.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i), 180.0f * sinf(3.14f / 200.0f * (360.0f / MAX_OBSTACLES1) * i)));
-	   gPhysRitSimulator.PushToColList(c2dCir1[i]);
+	   c2dCir1[i] = new C2DColliderCircle(1.0f, 20.0f / 10.0f, 0);
+	   //c2dCir1[i]->SetPosition(C2DVector(190.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i), 190.0f * sinf(3.14f / 200.0f * (360.0f / MAX_OBSTACLES1) * i)));
+	   c2dColObs->AttachCollider(C2DVector(190.0f / 10.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i), 190.0f / 10.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i)), 0.0f, c2dCir1[i]);
+	   //gPhysRitSimulator.PushToColList(c2dCir1[i]);
+	   
    }
+   c2dColObs->SetAngularV(3.14f / 180.0f * 30.0f);
+   gPhysRitSimulator.PushToColList(c2dColObs);
 
    C2DColliderCircle* c2dColCir1 = new C2DColliderCircle(5.0f, 30.0f, EF_IMPURSE | EF_GRAVITY);
    C2DColliderCircle* c2dColCir2 = new C2DColliderCircle(5.0f, 30.0f, EF_IMPURSE | EF_GRAVITY);
-   C2DColliderCircle* c2dColCir3 = new C2DColliderCircle(5.0f, 40.0f, EF_IMPURSE | EF_GRAVITY);
+   C2DColliderCircle* c2dColCir3 = new C2DColliderCircle(15.0f, 40.0f, EF_IMPURSE | EF_GRAVITY);
    C2DColliderCircle* c2dColCir4 = new C2DColliderCircle(5.0f, 40.0f, EF_IMPURSE | EF_GRAVITY);
-   C2DColliderCircle* c2dColCir5 = new C2DColliderCircle(15.0f, 60.0f, EF_IMPURSE | EF_GRAVITY);
-   C2DColliderCircle* c2dColCir6 = new C2DColliderCircle(20.0f, 80.0f, EF_IMPURSE | EF_GRAVITY);
-   C2DColliders* c2dColCirs = new C2DColliders(EF_IMPURSE | EF_GRAVITY);
-   c2dColCirs->AttachCollider(C2DVector(0.0f, -50.0f), 0.0f, c2dColCir1);
-   c2dColCirs->AttachCollider(C2DVector(0.0f, 50.0f), 0.0f, c2dColCir2);
-   c2dColCirs->SetPosition(C2DVector(-52.0f, 200.0f));
-   c2dColCirs->RotateACCoordZ(3.14f / 180.0f * -45.0f);
-   c2dColCir3->SetPosition(C2DVector(52.0f, 180.0f));
-   gPhysRitSimulator.PushToColList(c2dColCirs);
-   gPhysRitSimulator.PushToColList(c2dColCir3);
-   gPhysRitSimulator.PushToColList(c2dColCir4);
-   gPhysRitSimulator.PushToColList(c2dColCir5);
-   gPhysRitSimulator.PushToColList(c2dColCir6);
+   C2DColliderCircle* c2dColCir5 = new C2DColliderCircle(5.0f, 40.0f, EF_IMPURSE | EF_GRAVITY);
+   C2DColliderCircle* c2dColCir6 = new C2DColliderCircle(15.0f, 60.0f, EF_IMPURSE | EF_GRAVITY);
+   C2DColliderCircle* c2dColCir7 = new C2DColliderCircle(20.0f, 80.0f, EF_IMPURSE | EF_GRAVITY);
+   C2DColliders* c2dColCirs1 = new C2DColliders(EF_IMPURSE | EF_GRAVITY);
+   C2DColliders* c2dColCirs2 = new C2DColliders(EF_IMPURSE | EF_GRAVITY);
+   C2DColliders* c2dColCirs3 = new C2DColliders(EF_IMPURSE | EF_GRAVITY);
+   c2dColCirs1->AttachCollider(C2DVector(0.0f, -50.0f / 10.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs1->AttachCollider(C2DVector(0.0f, 50.0f / 10.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs1->AttachCollider(C2DVector(50.0f / 10.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs1->AttachCollider(C2DVector(-50.0f / 10.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs1->AttachCollider(C2DVector(0.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 40.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs1->SetPosition(C2DVector(-52.0f / 10.0f, 0.0f));
+   c2dColCirs1->RotateACCoordZ(3.14f / 180.0f * -45.0f);
+   c2dColCirs2->AttachCollider(C2DVector(0.0f, -50.0f / 10.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs2->AttachCollider(C2DVector(0.0f, 50.0f / 10.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs2->AttachCollider(C2DVector(50.0f / 10.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs2->AttachCollider(C2DVector(-50.0f / 10.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs2->AttachCollider(C2DVector(0.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 40.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs2->SetPosition(C2DVector(-52.0f / 10.0f, 0.0f));
+   c2dColCirs2->RotateACCoordZ(3.14f / 180.0f * -45.0f);
+   c2dColCirs3->AttachCollider(C2DVector(0.0f, -50.0f / 10.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs3->AttachCollider(C2DVector(0.0f, 50.0f / 10.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs3->AttachCollider(C2DVector(50.0f / 10.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs3->AttachCollider(C2DVector(-50.0f / 10.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 20.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs3->AttachCollider(C2DVector(0.0f, 0.0f), 0.0f, new C2DColliderCircle(105.0f, 40.0f / 10.0f, EF_IMPURSE | EF_GRAVITY));
+   c2dColCirs3->SetPosition(C2DVector(-52.0f / 10.0f, 0.0f));
+   c2dColCirs3->RotateACCoordZ(3.14f / 180.0f * -45.0f);
+
+   gPhysRitSimulator.PushToColList(c2dColCirs1);
+   gPhysRitSimulator.PushToColList(c2dColCirs2);
+   gPhysRitSimulator.PushToColList(c2dColCirs3);
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
@@ -208,18 +231,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 	case WM_TIMER:
-		fTimeStamp += 0.007f;
+		fTimeStamp += 0.009f;
 		for (int i = 0; i < MAX_OBSTACLES; i++)
 		{
-			c2dCir[i]->SetPosition(C2DVector(400.0f * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i + fTimeStamp), 400.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i + fTimeStamp)));
+			c2dCir[i]->SetPosition(C2DVector(400.0f / 10.0f * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i - fTimeStamp), 400.0f / 10.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES) * i - fTimeStamp)));
 		
 			
 		}
 
-		for (int i = 0; i < MAX_OBSTACLES1; i++)
+		/*for (int i = 0; i < MAX_OBSTACLES1; i++)
 		{
-			c2dCir1[i]->SetPosition(C2DVector(200.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i - fTimeStamp), 200.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i - fTimeStamp)));
-		}
+			c2dCir1[i]->SetPosition(C2DVector(190.0f  * cosf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i + fTimeStamp), 190.0f * sinf(3.14f / 180.0f * (360.0f / MAX_OBSTACLES1) * i + fTimeStamp)));
+		}*/
 		InvalidateRgn(hWnd, NULL, TRUE);
 		break;
 	case WM_SIZE:
